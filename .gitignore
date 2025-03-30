@@ -1,0 +1,24 @@
+# Ignorar configurações do VS Code
+.vscode/
+
+# Ignorar diretórios de build e binários
+/build/
+/docs/
+
+# Ignorar arquivos de compilação
+*.o
+*.out
+*.a
+*.so
+*.exe
+*.dll
+
+# Ignorar arquivos de backup e temporários
+*~
+*.swp
+*.tmp
+*.log
+
+# Ignorar arquivos gerados pelo Doxygen
+html/
+latex/
