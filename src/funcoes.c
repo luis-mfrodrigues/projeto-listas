@@ -12,6 +12,7 @@
 #include "../include/funcoes.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 /**
  * @brief Funcão para criar Antena
@@ -38,40 +39,60 @@ Antena* criarAntena(int x, int y, char freq) {
         return aux;
     }
 
-    /**
-     * @brief Função para inserir uma nova antena na lista de forma ordenada
-     * 
-     * @param inicio Apontador para o início da lista
-     * @param nova Apontador para a nova antena a ser inserida
-     * @return Antena* Apontador para o início da lista atualizada
-     */
+    Antena* inserirOrdenado(Antena* inicio, Antena* novo) {
 
-    Antena* inserirOrdenado(Antena* inicio, Antena* nova) {
-        if (!nova) {
-            return inicio; // Se a nova antena for NULL, retorna a lista original
+        // validações
+        if (novo == NULL) return inicio;
+        // Se já existe, não insere
+        if (existeAntena(inicio, novo->x, novo->y)) return inicio;
+    
+        // 1ª posição 
+        if (inicio == NULL || 
+            (novo->x < inicio->x || (novo->x == inicio->x && novo->y < inicio->y))) {
+            novo->next = inicio;
+            return novo;
         }
     
-        // Caso a lista esteja vazia ou a nova antena deva ser inserida no início
-        if (!inicio || (nova->x < inicio->x || (nova->x == inicio->x && nova->y < inicio->y))) {
-            nova->next = inicio;
-            return nova;
+        Antena* aux = inicio;
+        Antena* aux2 = aux;
+    
+        // Encontrar a posição correta com base em x e y
+        while (aux != NULL && 
+              (aux->x < novo->x || (aux->x == novo->x && aux->y < novo->y))) {
+            aux2 = aux;
+            aux = aux->next;
         }
     
-        Antena* atual = inicio;
-    
-        // Percorre a lista até encontrar a posição correta para inserir
-        while (atual->next && 
-               (atual->next->x < nova->x || 
-               (atual->next->x == nova->x && atual->next->y < nova->y))) {
-            atual = atual->next;
-        }
-    
-        // Insere a nova antena na posição correta
-        nova->next = atual->next;
-        atual->next = nova;
+        // Inserir no meio ou fim
+        novo->next = aux;
+        aux2->next = novo;
     
         return inicio;
     }
+
+    /**
+     * @brief Funcão para verificar se uma antena existe na lista
+     * 
+     * @param inicio 
+     * @param x 
+     * @param y 
+     * @return true 
+     * @return false 
+     */
+    
+
+    bool existeAntena(Antena* inicio, int x, int y) {
+        Antena* aux = inicio;
+        while (aux) {
+            if (aux->x == x && aux->y == y) {
+                return true; // Encontrou uma antena com as coordenadas x e y
+            }
+            aux = aux->next;
+        }
+        return false; // Não encontrou
+    }
+
+
 
 /**
  * @brief Funcão para remover antenas da lista (free)
@@ -84,6 +105,7 @@ Antena* criarAntena(int x, int y, char freq) {
         destruirLista(inicio->next); // Chama recursivamente para a próxima antena
         free(inicio);
     }
+
 
     /**
      * @brief Função para remover uma antena da lista
@@ -101,9 +123,9 @@ Antena* criarAntena(int x, int y, char freq) {
             return NULL; // Lista vazia, nada a remover
         }
     
-        // Caso especial: A antena a ser removida é a primeira da lista
+        // A antena a ser removida é a primeira da lista
         if (inicio->x == x && inicio->y == y && inicio->freq == freq) {
-            Antena* temp = inicio;       // Guarda antena a ser removida
+            Antena* temp = inicio;       // Guarda a antena a ser removida
             inicio = inicio->next;       // Atualiza o início da lista
             free(temp);                  // Liberta a memória da antena removida
             return inicio;               // Retorna o novo início da lista
@@ -113,15 +135,26 @@ Antena* criarAntena(int x, int y, char freq) {
         Antena* atual = inicio;
         while (atual->next) {
             if (atual->next->x == x && atual->next->y == y && atual->next->freq == freq) {
-                Antena* temp = atual->next; // Guardar a antena a ser removida
-                atual->next = temp->next;  // Remover a antena da lista
+                Antena* temp = atual->next; // Guarda a antena a ser removida
+                atual->next = temp->next;  // Remove a antena da lista
                 free(temp);                // Liberta a memória da antena removida
                 return inicio;             // Retorna o início da lista
             }
-            atual = atual->next; // Avançar para a próxima antena
+            atual = atual->next; // Avança para a próxima antena
         }
     
         // Se não encontrar a antena, retorna o início original
         return inicio;
     }
+
+
+    int mostrarLista(Antena* inicio) {
+        Antena* aux = inicio;
+        if (!inicio) return 0;
     
+        while (aux != NULL) {
+            printf("X = %d | Y = %d | Freq = %c\n", aux->x, aux->y, aux->freq);
+            aux = aux->next;
+        }
+        return 1;
+    }

@@ -11,3 +11,7 @@ run: all
 #apagar pasta build
 clean:
 	rm -rf build
+
+# abrir o arquivo de documentação (Doxygen)
+doc:
+	open -a "Google Chrome" docs/html/index.html
